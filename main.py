@@ -27,41 +27,50 @@ class main(): ##Main Class
 #**********************************************************************************************
 #1. Total number of commit contributions to any project to which a user has a contributed.
 #**********************************************************************************************
-@app.route("/")   
+@app.route("/criteria1")
+
+def criteria1():
          
    
 #**********************************************************************************************
 #2. Total number of commit contributions as above, but restricted to projects that are 
 #   members of the original submitted set.             
 #**********************************************************************************************
-@app.route("/")
+@app.route("/criteria2")
+
+def criteria2():
 
 
 #**********************************************************************************************
 #3. The number of known programming languages for each user (presuming that the languages of 
 #  any repository committed to are known to the user)
 #**********************************************************************************************  
-@app.route("/")
+@app.route("/criteria3")
 
+def criteria3():
 
 #**********************************************************************************************
 #4. The weekly commit rate of users (provide a weekly rank ordering) for the submitted 
 #  project set, for 2018.  
 #**********************************************************************************************
-@app.route("/")
+@app.route("/criteria4")
 
+def criteria4():
 
 #**********************************************************************************************
 #5. The average commit rate of each user to any project, for 2018."""
 #**********************************************************************************************
-@app.route("/")
+@app.route("/criteria5")
+
+def criteria5():
 
 #**********************************************************************************************
 #6. The total number of collaborators in 2018 (ie. a count of other users who have 
 #   contributed to any project that the user has contributed to).
 #**********************************************************************************************
-@app.route("/")
+@app.route("/criteria6")
 
+def criteria6():
 
 #**********************************************************************************************
 
