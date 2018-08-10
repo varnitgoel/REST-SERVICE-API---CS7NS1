@@ -7,29 +7,29 @@ Created on Mon Jul 23 18:50:55 2018
 
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
-import json, requests
-import time, getpass
+import json, requests, datetime, getpass, subprocess
 
 appl = Flask(__name__)
 api = Api(appl)
 
 class main(): #Main Class
     def __init__():
-        user_repo_no = input("Enter number of repositories/users: ") #user input for no of repo
-        git_name = []
+        user_repo_no = int(input("Enter number of repositories/users: ")) #user input for no of repo
+        git_user_name = []
         git_repo = []
-        git_user = {}
-        
+        git_user = []
         while(user_repo_no != 0):
+            name_of_user = input('Enter username: ')
+            git_user_name.append(name_of_user)
+            repository_name = input('Enter repository name: ')
+            git_repo.append(repository_name)
             
             
             
 ##1. Total number of commit contributions to any project to which a user has a contributed.
 @app.route("/criteria1")
-
-def count_user_commits(user):
-    r = requests.get('https://api.github.com/users/%s/repos' % user)
-    repos = json.loads(r.content)
+def criteria1():
+    git_count = {}
 
     
          
@@ -45,8 +45,6 @@ def criteria2():
 ##3. The number of known programming languages for each user (presuming that the languages of 
 ##  any repository committed to are known to the user)
 @app.route("/criteria3")
-
-GET https://api.github.com/repos/dotnet/corefx/languages
 
 def criteria3():
 
@@ -77,4 +75,4 @@ def criteria6():
 def master(): 
     
 if __name__ == "__main__":
-    appl.run()
+    appl.run(port = 9619)
