@@ -33,6 +33,19 @@ class main(): #Main Class
 def criteria1():
     git_count = {}
 
+#Function to get all the repos of a user
+def count_user_commits(user):
+    r = requests.get('https://api.github.com/users/%s/repos' % user)
+    repos = json.loads(r.content)
+#iterate over all the repos
+    for repo in repos:
+        if repo['fork'] is True:
+        
+            continue
+        n = count_repo_commits(repo['url'] + '/commits')
+        repo['num_commits'] = n
+        yield repo
+
     
          
    
