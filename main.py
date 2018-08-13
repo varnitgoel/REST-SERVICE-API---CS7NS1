@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jul 23 18:50:55 2018
-
 @author: Varnit Goel
 """
 
@@ -45,6 +44,27 @@ def count_user_commits(user):
         n = count_repo_commits(repo['url'] + '/commits')
         repo['num_commits'] = n
         yield repo
+#function to get repo commits
+def count_repo_commits(commits_url, _acc=0):
+    r = requests.get(commits_url)
+    commits = json.loads(r.content)
+    n = len(commits)
+    if n == 0:
+        return _acc
+    link = r.headers.get('link')
+    if link is None:
+        return _acc + n
+    next_url = find_next(r.headers['link'])
+    if next_url is None:
+        return _acc + n
+    # try to be tail recursive, even when it doesn't matter in CPython
+    return count_repo_commits(next_url, _acc + n)
+
+def find_next(link):
+    for l in link.split(','):
+        a, b = l.split(';')
+        if b.strip() == 'rel="next"':
+            return a.strip()[1:-1]
 
     
          
@@ -97,4 +117,4 @@ def criteria6():
 def master(): 
     
 if __name__ == "__main__":
-    appl.run(port = 9619)
+    appl.run(port = 9619)	
