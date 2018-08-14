@@ -74,18 +74,17 @@ def find_next(link):
 
    
 ##***************************************************************************************    
-##2. Total number of commit contributions as above, but restricted to projects that are 
-##   members of the original submitted set.             
+##2. Total number of commit contributions as above, but restricted to projects that are members of the original submitted set.             
 @appl.route("/criteria2", methods=['GET'])
-
 def criteria2():
     commit_count = {}
-    
+    for i in range(0,len(X.git_user_name)):
+        link = requests.get("https://api.github.com/repos/" + X.git_user_name[i] + X.repo_name[i])
+        data = json.loads(link.text)
 
 
 ##***************************************************************************************
-##3. The number of known programming languages for each user (presuming that the languages of 
-##   any repository committed to are known to the user)
+##3. The number of known programming languages for each user (presuming that the languages of any repository committed to are known to the user)
 @appl.route("/criteria3", methods=['GET'])
 def criteria3():
     prog_lang = {}
@@ -93,8 +92,7 @@ def criteria3():
 
 
 ##***************************************************************************************    
-##4. The weekly commit rate of users (provide a weekly rank ordering) for the submitted 
-##  project set, for 2018.  
+##4. The weekly commit rate of users (provide a weekly rank ordering) for the submitted project set, for 2018.  
 @appl.route("/criteria4", methods=['GET'])
 
 def criteria4():
@@ -123,8 +121,8 @@ def criteria6():
     
 ##***************************************************************************************    
 ##7. Email Module
-@app.route('/mail', methods = ['POST','GET'])
-def criteria7():
+@appl.route('/email', methods = ['GET'])
+def email():
 	msg['Subject'] = 'The contents of file'
 	msg['From'] = ##From email id
 	msg['To'] = ##To Email id
@@ -139,7 +137,8 @@ s.quit()
 ##**********************************************************************************************
 ## Main function
     
-def master(): 
+def main(): 
     
 if __name__ == "__main__":
+    V = main()
     appl.run(port = 9619)	
