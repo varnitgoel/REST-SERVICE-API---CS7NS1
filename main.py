@@ -8,6 +8,12 @@ from flask import Flask
 from flask_restful import Resource, Api, reqparse
 import json, requests, datetime, getpass, subprocess
 
+##*************************************For Email module******************************************** 
+import smtplib
+from smtplib import SMTPException
+from email.message import EmailMessage
+##*************************************************************************************************
+
 appl = Flask(__name__)
 api = Api(appl)
 
@@ -23,10 +29,10 @@ class main(): #Main Class
             repository_name = input('Enter repository name: ')
             repo_name.append(repository_name)
             user_repo_no = user_repo_no - 1
-            git_user.append(dict(zip(git_user_name,repo_name))) ##Created a dictionery to store
+        git_user.append(dict(zip(git_user_name,repo_name))) ##Created a dictionery to store
             
             
-            
+##********************************************************************************************************            
 ##1. Total number of commit contributions to any project to which a user has a contributed.
 @app.route("/criteria1", methods=['GET'])
 def criteria1():
@@ -65,14 +71,12 @@ def find_next(link):
         a, b = l.split(';')
         if b.strip() == 'rel="next"':
             return a.strip()[1:-1]
-
-    
-         
-   
+##********************************************************************************************************			
+			
+##********************************************************************************************************   
 ##2. Total number of commit contributions as above, but restricted to projects that are 
 ##   members of the original submitted set.             
 @app.route("/criteria2", methods=['GET'])
-
 def criteria2():
     git_count = {}
     
@@ -81,7 +85,10 @@ def criteria2():
 ##   any repository committed to are known to the user)
 @app.route("/criteria3", methods=['GET'])
 def criteria3():
-    prog_lang = {}
+    prog_lang = {} ##List of languages used
+	## Using this api 
+	## GET https://api.github.com/repos/
+	
     
 
     
@@ -90,15 +97,16 @@ def criteria3():
 @app.route("/criteria4", methods=['GET'])
 
 def criteria4():
-    commit_rate = {}
-
+    commit_rate = {} ##The commit rate list
+	##Using thi API
+	##https://api.github.com/users/
 
 
 ##5. The average commit rate of each user to any project, for 2018."""
 @app.route("/criteria5", methods=['GET'])
 
 def criteria5():
-    average_commit = {}
+    average_commit = {} ##List of average commits
 
 
     
@@ -107,10 +115,25 @@ def criteria5():
 @app.route("/criteria6", methods=['GET'])
 
 def criteria6():
-    collab = {}
-    
+    collab = {} ##List of Collaborators
 
-    
+	
+	
+
+##7. Email
+@app.route('/mail', methods = ['POST','GET'])
+def criteria7():
+	msg['Subject'] = 'The contents of file'
+	msg['From'] = ##From email id
+	msg['To'] = ##To Email id
+	
+# Send the message via our own SMTP server.
+s = smtplib.SMTP('localhost')
+s.send_message(msg)
+s.quit()
+
+
+
 ##**********************************************************************************************
 ##Main function
     
