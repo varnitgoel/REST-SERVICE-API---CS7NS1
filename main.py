@@ -16,6 +16,7 @@ from email.message import EmailMessage
 
 appl = Flask(__name__)
 api = Api(appl)
+tok = github.GitHub('myusername', 'mytoken')
 
 class main(): #Main Class
     def __init__():
@@ -79,7 +80,7 @@ def find_next(link):
 def criteria2():
     commit_count = {}
     for i in range(0,len(X.git_user_name)):
-        link = requests.get("https://api.github.com/repos/" + X.git_user_name[i] + X.repo_name[i])
+        link = requests.get("https://api.github.com/repos/" + X.git_user_name[i] + X.repo_name[i], auth = (myusername, mytoken))
         data = json.loads(link.text)
 
 
@@ -89,7 +90,7 @@ def criteria2():
 def criteria3():
     prog_lang = {}
     for i in range(0,len(X.git_user_name)):
-        link = requests.get("https://api.github.com/repos/" + X.git_user_name[i] + X.repo_name[i])        
+        link = requests.get("https://api.github.com/repos/" + X.git_user_name[i] + X.repo_name[i], auth = (myusername, mytoken))        
         data = json.loads(link.text)
 
 
@@ -100,7 +101,7 @@ def criteria3():
 def criteria4():
     commit_rate = {}
     for i in range(0,len(X.git_user_name)):
-        link = requests.get("https://api.github.com/repos/" + X.git_user_name[i] + X.repo_name[i])        
+        link = requests.get("https://api.github.com/repos/" + X.git_user_name[i] + X.repo_name[i], auth = (myusername, mytoken))        
         data = json.loads(link.text)
 
 ##***************************************************************************************
