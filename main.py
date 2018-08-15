@@ -88,7 +88,9 @@ def criteria2():
 @appl.route("/criteria3", methods=['GET'])
 def criteria3():
     prog_lang = {}
-    
+    for i in range(0,len(X.git_user_name)):
+        link = requests.get("https://api.github.com/repos/" + X.git_user_name[i] + X.repo_name[i])        
+        data = json.loads(link.text)
 
 
 ##***************************************************************************************    
@@ -97,8 +99,9 @@ def criteria3():
 
 def criteria4():
     commit_rate = {}
-
-
+    for i in range(0,len(X.git_user_name)):
+        link = requests.get("https://api.github.com/repos/" + X.git_user_name[i] + X.repo_name[i])        
+        data = json.loads(link.text)
 
 ##***************************************************************************************
 ##5. The average commit rate of each user to any project, for 2018."""
@@ -128,9 +131,9 @@ def email():
 	msg['To'] = ##To Email id
 	
 # Send the message via our own SMTP server.
-s = smtplib.SMTP('localhost')
-s.send_message(msg)
-s.quit()
+X = smtplib.SMTP('localhost')
+X.send_message(msg)
+X.quit()
 
     
 
@@ -140,5 +143,5 @@ s.quit()
 def main(): 
     
 if __name__ == "__main__":
-    V = main()
+    X = main()
     appl.run(port = 9619)	
