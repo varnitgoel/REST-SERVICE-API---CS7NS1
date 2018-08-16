@@ -11,8 +11,10 @@ import json, requests, datetime, getpass, subprocess
 
 ##********************************For Email module*************************************** 
 import smtplib
-from smtplib import SMTPException
-from email.message import EmailMessage
+#from smtplib import SMTPException
+#from email.message import EmailMessage
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
 ##***************************************************************************************
 appl = Flask(__name__)
 api = Api(appl)
@@ -130,7 +132,7 @@ def email():
     fromad = 'myusername'
     toad = ""
     msg = MIMEMultipart()
-    msg['From'] = fromaddr
+    msg['From'] = fromad
     msg['To'] = toaddr
     msg['Subject'] = "ANSWERS"
     
@@ -139,7 +141,7 @@ def email():
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(fromad, 'mytoken')
-    server.sendmail(fromad, toad, text)
+    server.sendmail(fromad, toad, message)
     server.quit()
     
 ##	msg['Subject'] = 'The contents of file'
