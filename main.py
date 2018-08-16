@@ -6,6 +6,7 @@ Created on Mon Jul 23 18:50:55 2018
 
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
+from github import emails
 import json, requests, datetime, getpass, subprocess
 
 ##********************************For Email module*************************************** 
@@ -13,7 +14,6 @@ import smtplib
 from smtplib import SMTPException
 from email.message import EmailMessage
 ##***************************************************************************************
-
 appl = Flask(__name__)
 api = Api(appl)
 tok = github.GitHub('myusername', 'mytoken')
@@ -21,16 +21,16 @@ tok = github.GitHub('myusername', 'mytoken')
 class main(): #Main Class
     def __init__():
         user_user_no = int(input("Enter number of repositories/users: ")) #user input for no of repo
-        git_user_name = []
+        user_name = []
         repo_name = []
         git_user = []
         while(user_user_no != 0):
             name_of_user = input('Enter username: ')
-            git_user_name.append(name_of_user)
+            user_name.append(name_of_user)
             repository_name = input('Enter repository name: ')
             repo_name.append(repository_name)
             user_user_no = user_user_no - 1
-            git_user.append(dict(zip(git_user_name,repo_name))) ##Created a dictionery to store
+            git_user.append(dict(zip(user_name,repo_name))) ##Created a dictionery to store
             
             
 ##***************************************************************************************          
@@ -79,8 +79,8 @@ def find_next(link):
 @appl.route("/criteria2", methods=['GET'])
 def criteria2():
     commit_count = {}
-    for i in range(0,len(X.git_user_name)):
-        link = requests.get("https://api.github.com/repos/" + X.git_user_name[i] + X.repo_name[i], auth = (myusername, mytoken))
+    for i in range(0,len(X.user_name)):
+        link = requests.get("https://api.github.com/repos/" + X.user_name[i] + X.repo_name[i], auth = (myusername, mytoken))
         data = json.loads(link.text)
 
 
@@ -89,8 +89,8 @@ def criteria2():
 @appl.route("/criteria3", methods=['GET'])
 def criteria3():
     prog_lang = {}
-    for i in range(0,len(X.git_user_name)):
-        link = requests.get("https://api.github.com/repos/" + X.git_user_name[i] + X.repo_name[i], auth = (myusername, mytoken))        
+    for i in range(0,len(X.user_name)):
+        link = requests.get("https://api.github.com/repos/" + X.user_name[i] + X.repo_name[i], auth = (myusername, mytoken))        
         data = json.loads(link.text)
 
 
@@ -100,8 +100,8 @@ def criteria3():
 
 def criteria4():
     commit_rate = {}
-    for i in range(0,len(X.git_user_name)):
-        link = requests.get("https://api.github.com/repos/" + X.git_user_name[i] + X.repo_name[i], auth = (myusername, mytoken))        
+    for i in range(0,len(X.user_name)):
+        link = requests.get("https://api.github.com/repos/" + X.user_name[i] + X.repo_name[i], auth = (myusername, mytoken))        
         data = json.loads(link.text)
 
 ##***************************************************************************************
@@ -127,16 +127,34 @@ def criteria6():
 ##7. Email Module
 @appl.route('/email', methods = ['GET'])
 def email():
-	msg['Subject'] = 'The contents of file'
-	msg['From'] = ##From email id
-	msg['To'] = ##To Email id
+    fromad = 'myusername'
+    toad = ""
+    msg = MIMEMultipart()
+    msg['From'] = fromaddr
+    msg['To'] = toaddr
+    msg['Subject'] = "ANSWERS"
+    
+    body = "Answers to all the 6 criterias"
+    
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(fromad, 'mytoken')
+    server.sendmail(fromad, toad, text)
+    server.quit()
+    
+##	msg['Subject'] = 'The contents of file'
+##	msg['From'] = ##From email id
+##	msg['To'] = ##To Email id
 	
 # Send the message via our own SMTP server.
-X = smtplib.SMTP('localhost')
-X.send_message(msg)
-X.quit()
+##X = smtplib.SMTP('localhost')
+#X.send_message(msg)
+#X.quit()
 
-    
+#print ("My repo names:")
+#for r in tok.repos.forUser(me):
+#    print(r.name)
+##
 
 ##**********************************************************************************************
 ## Main function
