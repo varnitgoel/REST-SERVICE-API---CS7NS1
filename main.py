@@ -7,12 +7,11 @@ Created on Mon Jul 23 18:50:55 2018
 from flask import Flask, jsonify, json  #to return the results as a response from a flask view
 from flask_restful import Resource, Api, reqparse
 from github import emails, github
-import json, requests, datetime, getpass, subprocess
+import json, requests, getpass, subprocess
 
 ##*********************************For Email module**************************************** 
 import smtplib
 from smtplib import SMTPException
-#from email.message import EmailMessage
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 ##*****************************************************************************************  
@@ -55,26 +54,26 @@ def criteria1():
     for repo in repos:
         if repo['fork'] is True:
             continue
-        u = count_repo_commits(repo['url'] + '/commits')
+        n = count_repo_commits(repo['url'] + '/commits')
         repo['num_commits'] = n
         yield repo
 #function to get repo commits
 def count_repo_commits(commits_url, _acc=0):
     r = requests.get(commits_url)
-    commits = json.loads(r.content)
+    commits = json.loads(file.text)
     n = len(commits)
     if n == 0:
         return _acc
-    link = r.headers.get('link')
-    if link is None:
+    file = r.headers.get('file')
+    if file is None:
         return _acc + n
-    next_url = find_next(r.headers['link'])
+    next_url = find_next(r.headers['file'])
     if next_url is None:
         return _acc + n
     return count_repo_commits(next_url, _acc + n)
 
-def find_next(link):
-    for l in link.split(','):
+def find_next(file):
+    for l in file.split(','):
         a, b = l.split(';')
         if b.strip() == 'rel="next"':
             return a.strip()[1:-1]
@@ -87,8 +86,8 @@ return jsonify(commit_count)
 def criteria2():
     commit_count = {}
     for u in range(0,len(X.user_name)):
-        link = requests.get("https://api.github.com/repos/" + X.user_name[u] + X.repo_name[u] +"/commits?since=2018-01-01", auth = (myusername, mytoken))
-        data = json.loads(link.text)
+        file = requests.get("https://api.github.com/repos/" + X.user_name[u] + X.repo_name[u] +"/commits?since=2018-01-01", auth = (myusername, mytoken))
+        data = json.loads(file.text)
         commit_count['{0}'.format(M.git_username[j])] = len(data)
     return jsonify(commit_count) 
 ##*****************************************************************************************
@@ -98,20 +97,27 @@ def criteria2():
 def criteria3():
     prog_lang = {}
     for u in range(0,len(X.user_name)):
-        link = requests.get("https://api.github.com/users/" + X.user_name[u] + X.repo_name[u]+"/repos", auth = (myusername, mytoken))        
-        data = json.loads(link.text)
+        file = requests.get("https://api.github.com/users/" + X.user_name[u] + "/repos", auth = (myusername, mytoken))        
+        data = json.loads(file.text)
+        output = nested_lookup(key = 'name', document = json_data, wild = True, with_keys = False)
         
+        lang = []
+        for x in range(0,len(output)):
+            file = requests.get("https://api.github.com/repos/" + output[x] + "/languages", auth = (myusername, mytoken)) 
+            lang_data = json.loads(file.text)
+            for y in range(0,len(lang_data)):
+                lang.append(list(lang_data)[x])
+            git_language['{0}'.format(X.user_name[j])] = list(set(lang))            
     return jsonify(prog_lang) 
 ##*****************************************************************************************
 ##4. The weekly commit rate of users (provide a weekly rank ordering) for the submitted project set, for 2018.  
 ##*****************************************************************************************
 @appl.route("/criteria4", methods=['GET'])  ##tell Flask what URL should trigger our function.
-
 def criteria4():
     commit_rate = {}
     for u in range(0,len(X.user_name)):
-        link = requests.get("https://api.github.com/repos/" + X.user_name[u] + X.repo_name[u]"/stats/commit_activity", auth = (myusername, mytoken))        
-        json_data = json.loads(link.text)
+        file = requests.get("https://api.github.com/repos/" + X.user_name[u] + X.repo_name[u]"/stats/commit_activity", auth = (myusername, mytoken))        
+        json_data = json.loads(file.text)
         
     return jsonify(commit_rate)        
 ##*****************************************************************************************
@@ -121,11 +127,21 @@ def criteria4():
 def criteria5():
     average_commit = {}
     for u in X.user_name:
-        link = requests.get("https://api.github.com/users/" + u + "/repos?per_page=100", auth=(myusername, mytoken))
-        json_data = json.loads(link.text)
-        
-        
-
+        flag = 0
+        flag1 = 0
+        file = requests.get("https://api.github.com/users/" + u + "/repos?per_page=100", auth=(myusername, mytoken))
+        json_data = json.loads(file.text)
+        output = nested_lookup(key = 'name', document = json_data, wild = False, with_keys = False)
+    
+        for j in output:
+            file = requests.get("https://api.github.com/repos/" + u + j + "/commits?since=2018-01-01", auth = (myusername, mytoken))
+            json_data = json.loads(file.text)
+            if (len(json_data) != 0):
+                flag = flag + 1
+                flag1 = len(json_data) + flag1
+            else:
+                continue
+        average_commit['{0}'.format(u)] = (flag1/flag)
     return jsonify(average_commit)  
 ##*****************************************************************************************
 ##6. The total number of collaborators in 2018 (ie. a count of other users who have 
@@ -136,10 +152,10 @@ def criteria5():
 def criteria6():
     collab = {}
     for u in X.user_name:
-        link = requests.get("https://api.github.com/users/" + u + "/repos?per_page=100", auth=(username, mytoken))
-        json_data = json.loads(link.text)
-    
-    
+        file = requests.get("https://api.github.com/users/" + u + "/repos?per_page=100", auth=(myusername, mytoken))
+        json_data = json.loads(file.text)
+
+    return jsonify(collab)
 ##*****************************************************************************************
 ##7. Email Module
 ##*****************************************************************************************
