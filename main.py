@@ -7,6 +7,7 @@ Created on Mon Jul 23 18:50:55 2018
 from flask import Flask, jsonify, json  #to return the results as a response from a flask view
 from flask_restful import Resource, Api, reqparse
 from github import emails, github
+from nested_lookup import nested_lookup
 import json, requests, getpass, subprocess
 
 ##*********************************For Email module**************************************** 
@@ -148,13 +149,13 @@ def criteria5():
 ##  contributed to any project that the user has contributed to).
 ##*****************************************************************************************
 @appl.route("/criteria6", methods=['GET'])  ##tell Flask what URL should trigger our function.
-
 def criteria6():
     collab = {}
     for u in X.user_name:
         file = requests.get("https://api.github.com/users/" + u + "/repos?per_page=100", auth=(myusername, mytoken))
         json_data = json.loads(file.text)
-
+        output = nested_lookup(key = 'name', document = json_data, wild = False, with_keys = False)
+        
     return jsonify(collab)
 ##*****************************************************************************************
 ##7. Email Module
