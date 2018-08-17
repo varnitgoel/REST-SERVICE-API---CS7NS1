@@ -24,6 +24,11 @@ tok = github.GitHub('myusername', 'mytoken')
 
 ##*****************************************************************************************  
 class main(): #Main Class
+    
+@appl.route('/users', methods = ['GET'])
+def users():
+    return jsonify(X.users)
+
     def __init__():
         user_no = int(input("Enter number of repositories/users: ")) #user input for no of repo
         user_name = []
@@ -49,9 +54,8 @@ def criteria1():
 #iterate over all the repos
     for repo in repos:
         if repo['fork'] is True:
-        
             continue
-        n = count_repo_commits(repo['url'] + '/commits')
+        u = count_repo_commits(repo['url'] + '/commits')
         repo['num_commits'] = n
         yield repo
 #function to get repo commits
@@ -75,11 +79,11 @@ def find_next(link):
         if b.strip() == 'rel="next"':
             return a.strip()[1:-1]
 
-   
+return jsonify(commit_count) 
 ##*****************************************************************************************    
 ##2. Total number of commit contributions as above, but restricted to projects that are members of the original submitted set.             
 ##*****************************************************************************************
-@appl.route("/criteria2", methods=['GET'])  ##tell Flask what URL should trigger our function.
+@appl.route("/criteria2", methods = ['GET'])  ##tell Flask what URL should trigger our function.
 def criteria2():
     commit_count = {}
     for u in range(0,len(X.user_name)):
@@ -114,12 +118,15 @@ def criteria4():
 ##5. The average commit rate of each user to any project, for 2018."""
 ##*****************************************************************************************
 @appl.route("/criteria5", methods=['GET'])  ##tell Flask what URL should trigger our function.
-
 def criteria5():
     average_commit = {}
+    for u in X.user_name:
+        link = requests.get("https://api.github.com/users/" + u + "/repos?per_page=100", auth=(myusername, mytoken))
+        json_data = json.loads(link.text)
+        
+        
 
-
-
+    return jsonify(average_commit)  
 ##*****************************************************************************************
 ##6. The total number of collaborators in 2018 (ie. a count of other users who have 
 ##  contributed to any project that the user has contributed to).
@@ -128,48 +135,46 @@ def criteria5():
 
 def criteria6():
     collab = {}
-    
+    for u in X.user_name:
+        link = requests.get("https://api.github.com/users/" + u + "/repos?per_page=100", auth=(username, mytoken))
+        json_data = json.loads(link.text)
     
     
 ##*****************************************************************************************
 ##7. Email Module
 ##*****************************************************************************************
-@appl.route('/email', methods = ['GET'])  ##tell Flask what URL should trigger our function.
-def email():
-    fromad = 'myusername'
-    toad = ""
-    msg = MIMEMultipart()
-    msg['From'] = fromad
-    msg['To'] = toaddr
-    msg['Subject'] = "ANSWERS"
-    
-    body = "Answers to all the 6 criterias"
-    
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(fromad, 'mytoken')
-    server.sendmail(fromad, toad, message)
-    server.quit()
-    
-##	msg['Subject'] = 'The contents of file'
-##	msg['From'] = ##From email id
-##	msg['To'] = ##To Email id
-	
-# Send the message via our own SMTP server.
-##X = smtplib.SMTP('localhost')
-#X.send_message(msg)
-#X.quit()
-
-#print ("My repo names:")
-#for r in tok.repos.forUser(me):
-#    print(r.name)
-##
-
+@appl.route('/email', methods = ['GET','POST'])  ##tell Flask what URL should trigger our function.
+def email(SUBJECT, BODY, TO, FROM):
+#    if request.method == 'POST':
+#        fromad = 'myusername'
+#        toad = ""
+        msg = MIMEMultipart()
+        msg['Subject'] = subject
+        msg['To'] = toaddr
+        msg['From'] = fromad
+        msg.preamble = ""
+        
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        password = 'mytoken'
+        server.starttls()
+        server.login(fromad, 'mytoken')
+        server.sendmail(fromad, toad, msg.as_string())
+        server.quit()
+        
 ##**********************************************************************************************
 ## Main function
-    
-def main(): 
-    
+
 if __name__ == "__main__":
     X = main()
     appl.run(port = 9619)	
+
+##**********************************************************************************************
+## Email Main function       
+    
+    server.set_debuglevel(1)  ##To Debug if problem while sending
+    
+    email_content = ""
+    toaddr = 'varnit.g519@gmail.com'
+    fromad ='goelv@tcd.ie'
+ 
+    email("Answers to 6 Criteria's", email_content, toaddr, fromad)
