@@ -19,6 +19,7 @@ from email.MIMEText import MIMEText
 
 #create instace of flask
 appl = Flask(__name__) ##Flask knows where to look for templates, static files etc.
+api = Api(appl)
 tok = github.GitHub('myusername', 'mytoken')
 
 ##*****************************************************************************************  
@@ -84,7 +85,7 @@ def criteria2():
     for u in range(0,len(X.user_name)):
         link = requests.get("https://api.github.com/repos/" + X.user_name[u] + X.repo_name[u] +"/commits?since=2018-01-01", auth = (myusername, mytoken))
         data = json.loads(link.text)
-        commit_count
+        commit_count['{0}'.format(M.git_username[j])] = len(data)
     return jsonify(commit_count) 
 ##*****************************************************************************************
 ##3. The number of known programming languages for each user (presuming that the languages of any repository committed to are known to the user)
@@ -93,8 +94,9 @@ def criteria2():
 def criteria3():
     prog_lang = {}
     for u in range(0,len(X.user_name)):
-        link = requests.get("https://api.github.com/repos/" + X.user_name[i] + X.repo_name[i], auth = (myusername, mytoken))        
-
+        link = requests.get("https://api.github.com/users/" + X.user_name[u] + X.repo_name[u]+"/repos", auth = (myusername, mytoken))        
+        data = json.loads(link.text)
+        
     return jsonify(prog_lang) 
 ##*****************************************************************************************
 ##4. The weekly commit rate of users (provide a weekly rank ordering) for the submitted project set, for 2018.  
@@ -104,12 +106,14 @@ def criteria3():
 def criteria4():
     commit_rate = {}
     for u in range(0,len(X.user_name)):
-        link = requests.get("https://api.github.com/repos/" + X.user_name[i] + X.repo_name[i], auth = (myusername, mytoken))        
-
+        link = requests.get("https://api.github.com/repos/" + X.user_name[u] + X.repo_name[u]"/stats/commit_activity", auth = (myusername, mytoken))        
+        json_data = json.loads(link.text)
+        
+    return jsonify(commit_rate)        
 ##*****************************************************************************************
 ##5. The average commit rate of each user to any project, for 2018."""
 ##*****************************************************************************************
-appl.route("/criteria5", methods=['GET'])  ##tell Flask what URL should trigger our function.
+@appl.route("/criteria5", methods=['GET'])  ##tell Flask what URL should trigger our function.
 
 def criteria5():
     average_commit = {}
