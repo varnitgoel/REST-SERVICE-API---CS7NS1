@@ -4,45 +4,45 @@ Created on Mon Jul 23 18:50:55 2018
 @author: Varnit Goel
 """
 
-from flask import Flask
+from flask import Flask, jsonify, json  #to return the results as a response from a flask view
 from flask_restful import Resource, Api, reqparse
-from github import emails
+from github import emails, github
 import json, requests, datetime, getpass, subprocess
 
-##********************************For Email module*************************************** 
+##*********************************For Email module**************************************** 
 import smtplib
-#from smtplib import SMTPException
+from smtplib import SMTPException
 #from email.message import EmailMessage
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
-##***************************************************************************************
-appl = Flask(__name__)
-api = Api(appl)
+##*****************************************************************************************  
+
+#create instace of flask
+appl = Flask(__name__) ##Flask knows where to look for templates, static files etc.
 tok = github.GitHub('myusername', 'mytoken')
 
+##*****************************************************************************************  
 class main(): #Main Class
     def __init__():
-        user_user_no = int(input("Enter number of repositories/users: ")) #user input for no of repo
+        user_no = int(input("Enter number of repositories/users: ")) #user input for no of repo
         user_name = []
         repo_name = []
         git_user = []
-        while(user_user_no != 0):
-            name_of_user = input('Enter username: ')
-            user_name.append(name_of_user)
-            repository_name = input('Enter repository name: ')
-            repo_name.append(repository_name)
-            user_user_no = user_user_no - 1
-            git_user.append(dict(zip(user_name,repo_name))) ##Created a dictionery to store
+        while(user_no != 0):
+            name_of_user = input('Enter username: ')  #Input for username
+            user_name.append(name_of_user)  #store username
+            repository_name = input('Enter repository name: ')  #input for repository name
+            repo_name.append(repository_name)  #store repo name
+            user_no = user_no - 1  
+        git_user.append(dict(zip(user_name,repo_name))) ##Created a dictionery to store
             
-            
-##***************************************************************************************          
+##*****************************************************************************************         
 ##1. Total number of commit contributions to any project to which a user has a contributed.
-@appl.route("/criteria1", methods=['GET'])
+##*****************************************************************************************
+@appl.route("/criteria1", methods=['GET'])  ##tell Flask what URL should trigger our function.
 def criteria1():
     commit_count = {}
-
-#Function to get all the repos of a user
-def count_user_commits(user):
+    for u in range(0,len(X.user_name))
     r = requests.get('https://api.github.com/users/%s/repos' % user)
     repos = json.loads(r.content)
 #iterate over all the repos
@@ -66,7 +66,6 @@ def count_repo_commits(commits_url, _acc=0):
     next_url = find_next(r.headers['link'])
     if next_url is None:
         return _acc + n
-    # try to be tail recursive, even when it doesn't matter in CPython
     return count_repo_commits(next_url, _acc + n)
 
 def find_next(link):
@@ -76,58 +75,62 @@ def find_next(link):
             return a.strip()[1:-1]
 
    
-##***************************************************************************************    
+##*****************************************************************************************    
 ##2. Total number of commit contributions as above, but restricted to projects that are members of the original submitted set.             
-@appl.route("/criteria2", methods=['GET'])
+##*****************************************************************************************
+@appl.route("/criteria2", methods=['GET'])  ##tell Flask what URL should trigger our function.
 def criteria2():
     commit_count = {}
-    for i in range(0,len(X.user_name)):
-        link = requests.get("https://api.github.com/repos/" + X.user_name[i] + X.repo_name[i], auth = (myusername, mytoken))
+    for u in range(0,len(X.user_name)):
+        link = requests.get("https://api.github.com/repos/" + X.user_name[u] + X.repo_name[u] +"/commits?since=2018-01-01", auth = (myusername, mytoken))
         data = json.loads(link.text)
-
-
-##***************************************************************************************
+        commit_count
+    return jsonify(commit_count) 
+##*****************************************************************************************
 ##3. The number of known programming languages for each user (presuming that the languages of any repository committed to are known to the user)
-@appl.route("/criteria3", methods=['GET'])
+##*****************************************************************************************
+@appl.route("/criteria3", methods=['GET'])  ##tell Flask what URL should trigger our function.
 def criteria3():
     prog_lang = {}
-    for i in range(0,len(X.user_name)):
+    for u in range(0,len(X.user_name)):
         link = requests.get("https://api.github.com/repos/" + X.user_name[i] + X.repo_name[i], auth = (myusername, mytoken))        
-        data = json.loads(link.text)
 
-
-##***************************************************************************************    
+    return jsonify(prog_lang) 
+##*****************************************************************************************
 ##4. The weekly commit rate of users (provide a weekly rank ordering) for the submitted project set, for 2018.  
-@appl.route("/criteria4", methods=['GET'])
+##*****************************************************************************************
+@appl.route("/criteria4", methods=['GET'])  ##tell Flask what URL should trigger our function.
 
 def criteria4():
     commit_rate = {}
-    for i in range(0,len(X.user_name)):
+    for u in range(0,len(X.user_name)):
         link = requests.get("https://api.github.com/repos/" + X.user_name[i] + X.repo_name[i], auth = (myusername, mytoken))        
-        data = json.loads(link.text)
 
-##***************************************************************************************
+##*****************************************************************************************
 ##5. The average commit rate of each user to any project, for 2018."""
-@appl.route("/criteria5", methods=['GET'])
+##*****************************************************************************************
+appl.route("/criteria5", methods=['GET'])  ##tell Flask what URL should trigger our function.
 
 def criteria5():
     average_commit = {}
 
 
 
-##***************************************************************************************   
+##*****************************************************************************************
 ##6. The total number of collaborators in 2018 (ie. a count of other users who have 
 ##  contributed to any project that the user has contributed to).
-@appl.route("/criteria6", methods=['GET'])
+##*****************************************************************************************
+@appl.route("/criteria6", methods=['GET'])  ##tell Flask what URL should trigger our function.
 
 def criteria6():
     collab = {}
     
     
     
-##***************************************************************************************    
+##*****************************************************************************************
 ##7. Email Module
-@appl.route('/email', methods = ['GET'])
+##*****************************************************************************************
+@appl.route('/email', methods = ['GET'])  ##tell Flask what URL should trigger our function.
 def email():
     fromad = 'myusername'
     toad = ""
